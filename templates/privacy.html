@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f7f7f5;
+            --surface: #ffffff;
+            --text: #111111;
+            --muted: #666666;
+            --border: #dddddd;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0f0f10;
+            --surface: #17181a;
+            --text: #f5f5f5;
+            --muted: #a0a0a0;
+            --border: #2a2c30;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            width: min(100% - 32px, 720px);
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar,
+        .content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+        }
+
+        .topbar a,
+        .toggle {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .toggle {
+            border: 1px solid var(--border);
+            background: transparent;
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .content {
+            margin-top: 18px;
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 18px;
+            font-size: 2rem;
+        }
+
+        h2 {
+            margin: 24px 0 8px;
+            font-size: 1.05rem;
+        }
+
+        p,
+        li {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        ul {
+            padding-left: 18px;
+        }
+
+        @media (max-width: 520px) {
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .content {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="topbar">
+            <a href="/">Home</a>
+            <button id="theme-toggle" class="toggle" type="button">Dark Mode</button>
+        </header>
+
+        <article class="content">
+            <h1>Privacy Policy</h1>
+            <p>We value your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you use our URL shortening service.</p>
+            <h2>Information We Collect</h2>
+            <p>We do not collect any personally identifiable information from our users. The only data we collect is the original URL that you submit for shortening. This data is stored temporarily and is notassociated with any user accounts or personal identifiers.</p>
+            <h2>How We Use Your Information</h2>
+            <p>The original URLs you submit are used solely for the purpose of generating shortened links. We do not use this information for any other purposes, such as marketing or analytics.</p>
+            <h2>Data Retention</h2>
+            <p>We retain the original URLs for a limited period of time to ensure that the shortened links continue to function properly. After this period, the original URLs are deleted from our servers.</p>
+            <h2>Third-Party Services</h2>
+            <p>We do not share your information with any third-party services. Our URL shortening service is self-contained and does not rely on external analytics or tracking tools.</p>
+            <h2>Your Rights</h2>
+            <p>You have the right to request the deletion of any original URLs you have submitted. If you would like to exercise this right, please contact us via social media.</p>
+            <h2>Changes to This Privacy Policy</h2>
+            <p>We may update this privacy policy from time to time. Any changes will be posted on this page, and we encourage you to review it periodically to stay informed about how we are protecting your information.</p>
+            <h2>Contact Us</h2>
+            <p>If you have any questions or concerns about this privacy policy, please feel free to contact us via social media.</p>
+        </article>
+    </main>
+
+    <script>
+        const root = document.documentElement;
+        const toggle = document.getElementById("theme-toggle");
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const storedTheme = localStorage.getItem("theme");
+
+        function applyTheme(theme) {
+            root.dataset.theme = theme;
+            toggle.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+        }
+
+        function systemTheme() {
+            return media.matches ? "dark" : "light";
+        }
+
+        applyTheme(storedTheme || systemTheme());
+
+        toggle.addEventListener("click", function () {
+            const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+            localStorage.setItem("theme", nextTheme);
+            applyTheme(nextTheme);
+        });
+
+        media.addEventListener("change", function () {
+            if (!localStorage.getItem("theme")) {
+                applyTheme(systemTheme());
+            }
+        });
+    </script>
+</body>
+</html>

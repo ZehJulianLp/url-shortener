@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julianverse URL Shortener</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f7f7f5;
+            --surface: #ffffff;
+            --text: #111111;
+            --muted: #666666;
+            --border: #dddddd;
+            --button: #111111;
+            --button-text: #ffffff;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0f0f10;
+            --surface: #17181a;
+            --text: #f5f5f5;
+            --muted: #a0a0a0;
+            --border: #2a2c30;
+            --button: #f5f5f5;
+            --button-text: #111111;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .page {
+            width: min(100% - 32px, 560px);
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar,
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+        }
+
+        .topbar a,
+        .brand {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .brand {
+            font-weight: 700;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .link {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .toggle {
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .card {
+            margin-top: 18px;
+            padding: 28px;
+        }
+
+        h1 {
+            margin: 0 0 10px;
+            font-size: 2rem;
+            line-height: 1.05;
+        }
+
+        p {
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        form {
+            margin-top: 24px;
+            display: grid;
+            gap: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 15px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--text);
+        }
+
+        button[type="submit"] {
+            border: 0;
+            border-radius: 12px;
+            padding: 14px 16px;
+            background: var(--button);
+            color: var(--button-text);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .submitted {
+            margin-top: 14px;
+            font-size: 0.95rem;
+        }
+
+        .temporary-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .checkbox {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .checkbox input {
+            width: auto;
+            margin: 0;
+        }
+
+        .duration {
+            display: none;
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: transparent;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .duration.visible {
+            display: block;
+        }
+
+        .result {
+            margin-top: 14px;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .result a {
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .error {
+            margin-top: 14px;
+            color: #c0392b;
+            font-size: 0.95rem;
+        }
+
+        .footer-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        @media (max-width: 520px) {
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="topbar">
+            <a class="brand" href="/">Julianverse URL Shortener</a>
+            <div class="actions">
+                <a class="link" href="/privacy">Privacy Policy</a>
+                <button id="theme-toggle" class="toggle" type="button">Dark Mode</button>
+            </div>
+        </header>
+
+        <section class="card">
+            <h1>Shorten your URLs.</h1>
+            <p>Enter a long URL below to create a shortened version.</p>
+
+            <form action="/shorten" method="post">
+                <input type="url" name="url" placeholder="https://example.com" required>
+                <div class="temporary-row">
+                    <label class="checkbox">
+                        <input id="temporary" type="checkbox" name="temporary" {% if temporary_requested %}checked{% endif %}>
+                        <span>Make temporary?</span>
+                    </label>
+                </div>
+                <select id="duration" class="duration {% if temporary_requested %}visible{% endif %}" name="duration">
+                    <option value="">Choose your expiration</option>
+                    {% for option in duration_options %}
+                    <option value="{{ option }}" {% if selected_duration == option %}selected{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit">Shorten</button>
+            </form>
+
+            {% if error_message %}
+            <p class="error">{{ error_message }}</p>
+            {% endif %}
+
+            {% if short_url %}
+            <div class="result">
+                <p>Your short URL:</p>
+                <p><a href="{{ short_url }}">{{ short_url }}</a></p>
+                {% if expires_at %}
+                <p class="submitted">Expires at: <strong>{{ expires_at }}</strong></p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {% if submitted_url %}
+            <p class="submitted">Received: <strong>{{ submitted_url }}</strong></p>
+            {% endif %}
+
+            <a class="footer-link" href="/privacy">Privacy Policy</a>
+        </section>
+    </main>
+
+    <script>
+        const root = document.documentElement;
+        const toggle = document.getElementById("theme-toggle");
+        const temporaryCheckbox = document.getElementById("temporary");
+        const durationSelect = document.getElementById("duration");
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const storedTheme = localStorage.getItem("theme");
+
+        function applyTheme(theme) {
+            root.dataset.theme = theme;
+            toggle.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+        }
+
+        function systemTheme() {
+            return media.matches ? "dark" : "light";
+        }
+
+        applyTheme(storedTheme || systemTheme());
+
+        toggle.addEventListener("click", function () {
+            const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+            localStorage.setItem("theme", nextTheme);
+            applyTheme(nextTheme);
+        });
+
+        media.addEventListener("change", function () {
+            if (!localStorage.getItem("theme")) {
+                applyTheme(systemTheme());
+            }
+        });
+
+        function syncTemporaryFields() {
+            durationSelect.classList.toggle("visible", temporaryCheckbox.checked);
+            durationSelect.disabled = !temporaryCheckbox.checked;
+            if (!temporaryCheckbox.checked) {
+                durationSelect.value = "";
+            }
+        }
+
+        syncTemporaryFields();
+        temporaryCheckbox.addEventListener("change", syncTemporaryFields);
+    </script>
+</body>
+</html>

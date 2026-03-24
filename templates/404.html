@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404</title>
+    <style>
+        :root {
+            color-scheme: light dark;
+            --bg: #f7f7f5;
+            --surface: #ffffff;
+            --text: #111111;
+            --muted: #666666;
+            --border: #dddddd;
+            --button: #111111;
+            --button-text: #ffffff;
+        }
+
+        html[data-theme="dark"] {
+            --bg: #0f0f10;
+            --surface: #17181a;
+            --text: #f5f5f5;
+            --muted: #a0a0a0;
+            --border: #2a2c30;
+            --button: #f5f5f5;
+            --button-text: #111111;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: grid;
+            place-items: center;
+            padding: 16px;
+        }
+
+        .card {
+            width: min(100%, 420px);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .topbar a,
+        .toggle {
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .toggle {
+            border: 1px solid var(--border);
+            background: transparent;
+            border-radius: 999px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            line-height: 1;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            margin-bottom: 10px;
+            color: var(--muted);
+            font-size: 0.85rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        p {
+            margin: 12px 0 0;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .joke {
+            margin-top: 14px;
+            padding: 12px 14px;
+            border: 1px dashed var(--border);
+            border-radius: 12px;
+            font-size: 0.95rem;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: var(--button);
+            color: var(--button-text);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        @media (max-width: 520px) {
+            .topbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <header class="topbar">
+            <a href="/">URL Shortener</a>
+            <button id="theme-toggle" class="toggle" type="button">Dark Mode</button>
+        </header>
+
+        <span class="eyebrow">Lost Link</span>
+        <h1>404 Not Found</h1>
+        <p>This is not the page you are looking for.</p>
+        <p class="joke">Oh no... your link is broken! Maybe it was deleted or moved.</p>
+        <a class="home-link" href="/">Back to Home</a>
+    </main>
+
+    <script>
+        const root = document.documentElement;
+        const toggle = document.getElementById("theme-toggle");
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const storedTheme = localStorage.getItem("theme");
+
+        function applyTheme(theme) {
+            root.dataset.theme = theme;
+            toggle.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+        }
+
+        function systemTheme() {
+            return media.matches ? "dark" : "light";
+        }
+
+        applyTheme(storedTheme || systemTheme());
+
+        toggle.addEventListener("click", function () {
+            const nextTheme = root.dataset.theme === "dark" ? "light" : "dark";
+            localStorage.setItem("theme", nextTheme);
+            applyTheme(nextTheme);
+        });
+
+        media.addEventListener("change", function () {
+            if (!localStorage.getItem("theme")) {
+                applyTheme(systemTheme());
+            }
+        });
+    </script>
+</body>
+</html>
