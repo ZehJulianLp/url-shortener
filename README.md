@@ -39,6 +39,29 @@ A minimal Flask-based URL shortener with SQLite storage, temporary links, and a 
    python3 app.py
    ```
 
+## Docker
+
+Build the image:
+
+```bash
+docker build -t url-shortener .
+```
+
+Run the container with a persistent SQLite volume:
+
+```bash
+docker run -d \
+  --name url-shortener \
+  -p 5000:5000 \
+  -v url_shortener_data:/data \
+  url-shortener
+```
+
+Optional environment variables:
+
+- `PORT` sets the application port inside the container
+- `DATABASE_PATH` sets the SQLite file location and defaults to `/data/urls.db`
+
 ## How It Works
 
 - Permanent links are deduplicated, so the same normalized URL gets the same short code.

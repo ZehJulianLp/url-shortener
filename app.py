@@ -1,3 +1,4 @@
+import os
 import secrets
 import sqlite3
 import ipaddress
@@ -9,7 +10,7 @@ from flask import Flask, abort, g, redirect, render_template, request, url_for
 
 
 BASE_DIR = Path(__file__).resolve().parent
-DATABASE_PATH = BASE_DIR / "urls.db"
+DATABASE_PATH = Path(os.environ.get("DATABASE_PATH", BASE_DIR / "urls.db"))
 SHORT_CODE_LENGTH = 6
 MAX_URL_LENGTH = 10_000
 TEMPORARY_DURATION_OPTIONS = {
@@ -353,4 +354,8 @@ init_db()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(
+        host=os.environ.get("FLASK_RUN_HOST", "127.0.0.1"),
+        port=int(os.environ.get("PORT", "5000")),
+        debug=os.environ.get("FLASK_DEBUG", "").lower() == "true",
+    )

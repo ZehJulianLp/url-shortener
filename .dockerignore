@@ -1,4 +1,6 @@
+.git
+.gitignore
 __pycache__/
 *.py[cod]
-urls.db
 .venv/
+urls.db
